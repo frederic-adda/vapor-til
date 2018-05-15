@@ -13,3 +13,10 @@ extension User: PostgreSQLUUIDModel {}
 extension User: Migration {}
 extension User: Content {}
 extension User: Parameter {}
+
+
+extension User {
+    var acronyms: Children<User, Acronym> {
+        return children(\.userID) // user reference on the children
+    }
+}

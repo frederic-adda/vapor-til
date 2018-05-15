@@ -10,8 +10,6 @@ public func routes(_ router: Router) throws {
     let usersController = UsersController()
     try router.register(collection: usersController)
     
-    
-    router.get("hello") { req -> String in
-        return "Hello World"
-    }
+    let categoriesController = CategoriesController()
+    try router.register(collection: categoriesController)
 }

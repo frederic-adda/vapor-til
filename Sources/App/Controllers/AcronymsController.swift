@@ -4,16 +4,16 @@ import Fluent
 struct AcronymsController: RouteCollection {
     func boot(router: Router) throws {
     
-        let acronymsRoutes = router.grouped("api", "acronyms")
+        let acronymsRoute = router.grouped("api", "acronyms")
         
-        acronymsRoutes.get(use: getAllHandler)
-        acronymsRoutes.post(Acronym.self, use: createHandler)
-        acronymsRoutes.get(Acronym.parameter, use: getHandler)
-        acronymsRoutes.put(Acronym.parameter, use: updateHandler)
-        acronymsRoutes.delete(Acronym.parameter, use: deleteHandler)
-        acronymsRoutes.get("search", use: searchHandler)
-        acronymsRoutes.get("first", use: getFirstHandler)
-        acronymsRoutes.get("sorted", use: sortedHandler)
+        acronymsRoute.get(use: getAllHandler)
+        acronymsRoute.post(Acronym.self, use: createHandler)
+        acronymsRoute.get(Acronym.parameter, use: getHandler)
+        acronymsRoute.put(Acronym.parameter, use: updateHandler)
+        acronymsRoute.delete(Acronym.parameter, use: deleteHandler)
+        acronymsRoute.get("search", use: searchHandler)
+        acronymsRoute.get("first", use: getFirstHandler)
+        acronymsRoute.get("sorted", use: sortedHandler)
     }
     
     
@@ -35,9 +35,11 @@ struct AcronymsController: RouteCollection {
     func updateHandler(_ req: Request) throws -> Future<Acronym> {
         return try flatMap(to: Acronym.self,
                            req.parameters.next(Acronym.self),
-                           req.content.decode(Acronym.self), { (acronym, updatedAcronym) in
+                           req.content.decode(Acronym.self), { (oldAcronym, updatedAcronym) in
+                            var acronym = oldAcronym
                             acronym.short = updatedAcronym.short
                             acronym.long = updatedAcronym.long
+                            acronym.userID = updatedAcronym.userID
                             return acronym.save(on: req)
         })
     }

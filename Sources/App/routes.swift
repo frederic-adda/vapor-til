@@ -7,6 +7,10 @@ public func routes(_ router: Router) throws {
     let acronymsController = AcronymsController()
     try router.register(collection: acronymsController)
     
+    let usersController = UsersController()
+    try router.register(collection: usersController)
+    
+    
     router.get("hello") { req -> String in
         return "Hello World"
     }

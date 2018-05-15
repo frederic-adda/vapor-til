@@ -1,15 +1,11 @@
 import Vapor
 import FluentPostgreSQL
 
-final class Acronym: Codable {
+struct Acronym: Codable {
     var id: Int?
     var short: String
     var long: String
-    
-    init(short: String, long: String) {
-        self.short = short
-        self.long = long
-    }
+    var userID: User.ID
 }
 
 

@@ -7,6 +7,8 @@ struct WebsiteController: RouteCollection {
         
         router.get(use: indexHandler)
         router.get("acronyms", Acronym.parameter, use: acronymHandler)
+        router.get("users", User.parameter, use: userHandler)
+        router.get("users", use: allUsersHandler)
     }
     
     
@@ -25,6 +27,7 @@ struct WebsiteController: RouteCollection {
                 return try req.view().render("index", context)
             })
     }
+    
     
     func acronymHandler(_ req: Request) throws -> Future<View> {
        
@@ -48,7 +51,42 @@ struct WebsiteController: RouteCollection {
     }
     
     
+    func userHandler(_ req: Request) throws -> Future<View> {
+        
+        struct UserContext: Encodable {
+            let title: String
+            let user: User
+            let acronyms: [Acronym]
+        }
+        
+        return try req.parameters.next(User.self)
+            .flatMap(to: View.self, { user in
+                
+                return try user.acronyms
+                    .query(on: req)
+                    .all()
+                    .flatMap(to: View.self, { acronyms in
+                        let context = UserContext(title: user.name, user: user, acronyms: acronyms)
+                        return try req.view().render("user", context)
+                    })
+            })
+    }
     
+    
+    func allUsersHandler(_ req: Request) throws -> Future<View> {
+        
+        struct AllUsersContext: Encodable {
+            let title: String
+            let users: [User]
+        }
+        
+        return User.query(on: req)
+            .all()
+            .flatMap(to: View.self, { users in
+                let context = AllUsersContext(title: "All Users", users: users)
+                return try req.view().render("allUsers", context)
+            })
+    }
     
 }
 
